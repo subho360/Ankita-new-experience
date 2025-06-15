@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>leaflet tutorial</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+       <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .coordinate {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map">
+        <div class="leaflet-control coordinate"></div>
+    </div>
+
+</body>
+
+</html>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script src="./touristspot.js"></script>
+<script src="./restrurent.js"></script>
+<script src="./Adventure.js"></script>
+<script src="./Shopping.js"></script>
+<script src="./Religioussite.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+<script>
+    //map initialization
+
+    var map = L.map('map').setView([27.0416, 88.2664], 8);
+
+    //defaltlayer
+    var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+
+    // OSM layer
+    var OSMlayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    OSMlayer.addTo(map);
+    // satellite
+    googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+    googleHybrid.addTo(map)
+    //terrain
+    var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+    googleTerrain.addTo(map);
+    googleStreets.addTo(map);
+
+
+    //districtmarker
+    // var singlemarker = L.marker([27.0416, 88.2664]).addTo(map);
+    // var popup = singlemarker.bindPopup('DARJEELING ' + singlemarker.getLatLng()).openPopup();
+    // popup.addTo(map)
+
+    //geojson
+
+    var Tourist_Spot = L.geoJSON(touristspotJSON, {
+        pointToLayer: function (feature, latlng) {
+            const customIcon = L.icon({
+                iconUrl: './TOURIST SPOT.svg',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32]
+            });
+
+            return L.marker(latlng, { icon: customIcon });
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>Place Name : </b>` + feature.properties.Name +
+                `<b> reveiw : </b>` + feature.properties.ATTRACTION)
+        },
+        filter: function (pointJSON) {
+            return true;
+        }
+    }).addTo(map)
+
+    var Restrurents = L.geoJSON(restrurentJSON, {
+        pointToLayer: function (feature, latlng) {
+            const customIcon = L.icon({
+                iconUrl: './food-dinner-lunch-knife-fork-svgrepo-com.svg',
+                iconSize: [19, 19],
+                iconAnchor: [16, 32]
+            });
+
+            return L.marker(latlng, { icon: customIcon });
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>Name : </b>` + feature.properties.Place_name +
+                `<b> reveiw : </b>` + feature.properties.Total_scor + `<b> Category : </b>` + feature.properties.Category)
+        },
+        filter: function (pointJSON) {
+            return true;
+        }
+    }).addTo(map)
+
+    var Adventurespot = L.geoJSON(adventureJSON, {
+        pointToLayer: function (feature, latlng) {
+            const customIcon = L.icon({
+                iconUrl: './trekking-walker-svgrepo-com.svg',
+                iconSize: [25, 25],
+                iconAnchor: [16, 32]
+            });
+
+            return L.marker(latlng, { icon: customIcon });
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>Name : </b>` + feature.properties.Name)
+        },
+        filter: function (pointJSON) {
+            return true;
+        }
+    }).addTo(map)
+
+    var Shoppingspot = L.geoJSON(shoppingJSON, {
+        pointToLayer: function (feature, latlng) {
+            const customIcon = L.icon({
+                iconUrl: './shopping-cart-svgrepo-com.svg',
+                iconSize: [20, 20],
+                iconAnchor: [16, 32]
+            });
+
+            return L.marker(latlng, { icon: customIcon });
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>Name : </b>` + feature.properties.Name)
+        },
+        filter: function (pointJSON) {
+            return true;
+        }
+    }).addTo(map)
+
+    var Religioussite = L.geoJSON(religioussiteJSON, {
+        pointToLayer: function (feature, latlng) {
+            const customIcon = L.icon({
+                iconUrl: './religion.svg',
+                iconSize: [25, 25],
+                iconAnchor: [16, 32]
+            });
+
+            return L.marker(latlng, { icon: customIcon });
+        },
+
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<b>Name : </b>` + feature.properties.Name)
+        },
+        filter: function (pointJSON) {
+            return true;
+        }
+    }).addTo(map)
+
+
+    //Layer controler
+
+    var baseMaps = {
+
+        "Satellite": googleHybrid,
+        "Open Street Map": OSMlayer,
+        "Terrain": googleTerrain,
+        "Default": googleStreets,
+    };
+
+    var overlayMaps = {
+        //"Darjeeling": singlemarker,
+        "Tourist Spot": Tourist_Spot,
+        "Temple": Religioussite,
+        "Adventure Hub": Adventurespot,
+        "Restrurent": Restrurents,
+        "Market ": Shoppingspot,
+
+    };
+    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+    // Coordinate display on mouse move
+    map.on('mousemove', function (e) {
+        const coordinateBox = document.querySelector('.coordinate');
+        coordinateBox.innerHTML = `Lat: ${e.latlng.lat.toFixed(5)} Lng: ${e.latlng.lng.toFixed(5)}`;
+        coordinateBox.style.color = 'black';
+        coordinateBox.style.fontFamily = 'Times New Roman';
+        coordinateBox.style.fontSize = '14px';
+        coordinateBox.style.backgroundColor = 'white';
+        coordinateBox.style.padding = '5px';
+    });
+
+    // add map scale
+    L.control.scale({ position: 'bottomright' }).addTo(map)
+
+    //current location
+
+    if (!navigator.geolocation) {
+        console.log("Your browser dosen't support geolocation feature!")
+    } else {
+        setInterval(() => {
+            navigator.geolocation.getCurrentPosition(getposition)
+        }, 5000);
+    }
+
+    var marker, circle;
+    // Function to get current location and show on map
+    function getposition(position) {
+        var lat = position.coords.latitude
+        var long = position.coords.longitude
+        var accuracy = position.coords.accuracy
+
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        if (circle) {
+            map.removeLayer(circle)
+        }
+
+        marker = L.marker([lat, long]).addTo(map);
+        circle = L.circle([lat, long], { radius: accuracy }).addTo(map);
+
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map);
+        // map.fitBounds(featureGroup.getBounds());
+
+        console.log("Your coordinate is: Lat: " + lat + " Long: " + long + " Accuracy: " + accuracy);
+
+        // Store current location for routing
+        window.currentLatLng = L.latLng(lat, long);
+    }
+    // Map click event to create second marker and draw route
+
+    map.on('click', function (e) {
+        var clickedLatLng = e.latlng;
+        L.marker(clickedLatLng).addTo(map);
+
+        if (window.currentLatLng) {
+            L.Routing.control({
+                waypoints: [
+                    window.currentLatLng,
+                    clickedLatLng
+                ],
+                routeWhileDragging: false
+            }).addTo(map);
+        } else {
+            alert("Current location not available yet.");
+        }
+    });
+
+    // Add geocoder search control to the map
+    L.Control.geocoder({
+        defaultMarkGeocode: true
+    }).addTo(map);
+
+
+
+</script>
